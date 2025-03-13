@@ -40,11 +40,12 @@ mysqli_close($conn);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/registration.css">
     <title>Registrasi</title>
 </head>
 <body>
-    <h2>Halaman Registrasi</h2>
     <form method="POST">
+        <h2>Halaman Registrasi</h2>
         <label for="nomorInduk">Masukkan nomor induk anda:</label>
         <input type="text" id="nomorInduk" name="nomorInduk" required autocomplete="off"><br>
 

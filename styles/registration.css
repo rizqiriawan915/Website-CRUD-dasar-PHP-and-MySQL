@@ -1,55 +1,56 @@
+/* Styling untuk seluruh halaman */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
 }
 
-h2 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
+/* Container utama */
 form {
     background: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 350px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    text-align: center;
 }
 
+/* Heading */
+h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Styling input dan label */
 label {
     display: block;
-    margin: 10px 0 5px;
     font-weight: bold;
-    width: 100%;
+    margin: 10px 0 5px;
     text-align: left;
 }
 
 input {
     width: 100%;
     padding: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
+/* Tombol submit */
 button {
     background: #28a745;
-    color: white;
+    color: #fff;
     padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
     width: 100%;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     font-size: 16px;
 }
 
@@ -57,15 +58,28 @@ button:hover {
     background: #218838;
 }
 
+/* Link ke login */
 a {
-    display: inline-block;
+    display: block;
     margin-top: 10px;
     text-decoration: none;
     color: #007bff;
-    text-align: center;
-    font-size: 14px;
 }
 
 a:hover {
     text-decoration: underline;
+}
+
+/* Pesan error */
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Pesan sukses */
+.success {
+    color: green;
+    font-size: 14px;
+    margin-top: 10px;
 }
