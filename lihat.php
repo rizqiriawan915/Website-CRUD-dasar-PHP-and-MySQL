@@ -7,6 +7,14 @@ if (!isset($_SESSION['nomor_induk'])) {
     exit();
 }
 
+// Handle logout
+if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+    session_unset();
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+
 // Database connection
 $conn = mysqli_connect("localhost", "root", "", "crud_app");
 
@@ -33,8 +41,21 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// Fetch all data
-$query = "SELECT * FROM karyawan";
+// **Pagination**
+$per_page = 10; // Jumlah data per halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Ambil nomor halaman dari URL
+$start = ($page - 1) * $per_page; // Tentukan titik awal data
+
+// Hitung total data
+$total_query = "SELECT COUNT(*) as total FROM karyawan";
+$total_result = mysqli_query($conn, $total_query);
+$total_row = mysqli_fetch_assoc($total_result);
+$total_data = $total_row['total'];
+
+$total_pages = ceil($total_data / $per_page); // Hitung total halaman
+
+// Ambil data sesuai halaman
+$query = "SELECT * FROM karyawan LIMIT $start, $per_page";
 $result = mysqli_query($conn, $query);
 ?>
 
@@ -49,58 +70,50 @@ $result = mysqli_query($conn, $query);
 <body>
     <div class="header-container">
         <h2>Data Karyawan</h2>
-        <a href="logout.php" class="btn btn-logout">Logout</a>
+        <a href="?action=logout" class="btn btn-logout">Logout</a>
     </div>
     
     <div class="welcome">
-        <p>Selamat datang, <strong><?php echo $username; ?>
+        <p>Selamat datang, <strong><?php echo $username; ?></strong></p>
+    </div>
+    <div class="action-container">
+        <a href="tambah.php" class="btn btn-add">Tambah Data</a>
+        
+        <div class="search-container">
+            <label for="search" class="search-label">Cari:</label>
+            <input type="text" id="search" class="search-box" placeholder="Cari data karyawan..." autocomplete="off">
+        </div>
     </div>
     
-    <?php if (isset($success_message)) { ?>
-        <div class="message success"><?php echo $success_message; ?></div>
-    <?php } ?>
-    
-    <?php if (isset($error_message)) { ?>
-        <div class="message error"><?php echo $error_message; ?></div>
-    <?php } ?>
-    
-    <a href="tambah.php" class="btn btn-add">Tambah Data</a>
-    
-    <table>
-        <tr>
-            <th>No</th>
-            <th>Nomor Induk</th>
-            <th>Nama Karyawan</th>
-            <th>Jenis Kelamin</th>
-            <th>Email</th>
-            <th>No. Telepon</th>
-            <th>Jabatan</th>
-            <th>Aksi</th>
-        </tr>
-        
-        <?php
-        if (mysqli_num_rows($result) > 0) {
-            $no = 1;
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo "<tr>";
-                echo "<td>" . $no++ . "</td>";
-                echo "<td>" . $row['nomor_induk'] . "</td>";
-                echo "<td>" . $row['nama_karyawan'] . "</td>";
-                echo "<td>" . $row['jenis_kelamin'] . "</td>";
-                echo "<td>" . $row['email'] . "</td>";
-                echo "<td>" . $row['no_telepon'] . "</td>";
-                echo "<td>" . $row['jabatan'] . "</td>";
-                echo "<td>
-                        <a href='ubah.php?id=" . $row['nomor_induk'] . "' class='btn btn-edit'>Edit</a>
-                        <a href='lihat.php?delete=" . $row['nomor_induk'] . "' class='btn btn-delete' onclick='return confirm(\"Apakah Anda yakin ingin menghapus data ini?\");'>Hapus</a>
-                      </td>";
-                echo "</tr>";
-            }
-        } else {
-            echo "<tr><td colspan='8' style='text-align: center;'>Tidak ada data karyawan</td></tr>";
-        }
-        ?>
+    <div id="karyawan-data">
+    <table id="karyawanTable">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nomor Induk</th>
+                <th>Nama Karyawan</th>
+                <th>Jenis Kelamin</th>
+                <th>Email</th>
+                <th>No. Telepon</th>
+                <th>Jabatan</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="karyawan-body">
+            <!-- Data dari AJAX akan masuk sini -->
+        </tbody>
     </table>
+</div>
+
+<!-- Tombol Pagination -->
+<div class="pagination" data-page="<?php echo $page; ?>" data-total="<?php echo $total_pages; ?>">
+    <button id="prev-btn" class="btn">Sebelumnya</button>
+    <span id="page-number"><?php echo $page; ?></span>
+    <button id="next-btn" class="btn">Selanjutnya</button>
+</div>
+
+
+    <script src="./javascript/ajax.js"></script>
 </body>
 </html>
 
