@@ -64,57 +64,70 @@ $result = mysqli_query($conn, $query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./styles/lihat.css">
     <title>Lihat Data Karyawan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="header-container">
-        <h2>Data Karyawan</h2>
-        <a href="?action=logout" class="btn btn-logout">Logout</a>
-    </div>
-    
-    <div class="welcome">
-        <p>Selamat datang, <strong><?php echo $username; ?></strong></p>
-    </div>
-    <div class="action-container">
-        <a href="tambah.php" class="btn btn-add">Tambah Data</a>
+<body class="bg-light">
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-primary">Data Karyawan</h2>
+            <a href="?action=logout" class="btn btn-danger">Logout</a>
+        </div>
         
-        <div class="search-container">
-            <label for="search" class="search-label">Cari:</label>
-            <input type="text" id="search" class="search-box" placeholder="Cari data karyawan..." autocomplete="off">
+        <div class="alert alert-info">Selamat datang, <strong><?php echo $username; ?></strong></div>
+        
+        <div class="d-flex justify-content-between mb-3">
+            <a href="tambah.php" class="btn btn-success">Tambah Data</a>
+            <div class="input-group w-50">
+                <span class="input-group-text">🔍</span>
+                <input type="text" id="search" class="form-control" placeholder="Cari data karyawan..." autocomplete="off">
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>Nomor Induk</th>
+                        <th>Nama Karyawan</th>
+                        <th>Jenis Kelamin</th>
+                        <th>Email</th>
+                        <th>No. Telepon</th>
+                        <th>Jabatan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="karyawan-body">
+                    <!-- Data dari AJAX akan masuk sini -->
+                    <tr>
+                        <td>1</td>
+                        <td>12345</td>
+                        <td>John Doe</td>
+                        <td>Laki-laki</td>
+                        <td>john.doe@example.com</td>
+                        <td>08123456789</td>
+                        <td>Manager</td>
+                        <td>
+                            <a href="detail.php?id=12345" class="btn btn-info btn-sm">Detail</a>
+                            <a href="edit.php?id=12345" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="hapus.php?id=12345" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');">Hapus</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tombol Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <button id="prev-btn" class="btn btn-secondary">Sebelumnya</button>
+            <span id="page-number" class="fw-bold">Halaman <?php echo $page; ?></span>
+            <button id="next-btn" class="btn btn-secondary">Selanjutnya</button>
         </div>
     </div>
     
-    <div id="karyawan-data">
-    <table id="karyawanTable">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nomor Induk</th>
-                <th>Nama Karyawan</th>
-                <th>Jenis Kelamin</th>
-                <th>Email</th>
-                <th>No. Telepon</th>
-                <th>Jabatan</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody id="karyawan-body">
-            <!-- Data dari AJAX akan masuk sini -->
-        </tbody>
-    </table>
-</div>
-
-<!-- Tombol Pagination -->
-<div class="pagination" data-page="<?php echo $page; ?>" data-total="<?php echo $total_pages; ?>">
-    <button id="prev-btn" class="btn">Sebelumnya</button>
-    <span id="page-number"><?php echo $page; ?></span>
-    <button id="next-btn" class="btn">Selanjutnya</button>
-</div>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./javascript/ajax.js"></script>
 </body>
 </html>
-
 <?php mysqli_close($conn); ?>

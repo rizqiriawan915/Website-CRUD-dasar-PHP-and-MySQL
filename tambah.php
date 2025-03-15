@@ -41,38 +41,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./styles/tambah.css">
     <title>Tambah Karyawan</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-
-<h2>Tambah Data Karyawan</h2>
-<form method="POST">
-    <label>Nomor Induk:</label>
-    <input type="text" name="nomor_induk" required><br>
-
-    <label>Nama Karyawan:</label>
-    <input type="text" name="nama_karyawan" required><br>
-
-    <label>Jenis Kelamin:</label>
-    <select name="jenis_kelamin" required>
-        <option value="Laki-laki">Laki-laki</option>
-        <option value="Perempuan">Perempuan</option>
-    </select><br>
-
-    <label>Email:</label>
-    <input type="email" name="email" required><br>
-
-    <label>No. Telepon:</label>
-    <input type="number" name="no_telepon" required><br>
-
-    <label>Jabatan:</label>
-    <input type="text" name="jabatan" required><br>
-
-    <button type="submit">Tambah</button>
-</form>
-
-<a href="lihat.php">Kembali ke Halaman Utama</a>
-
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2 class="text-center">Tambah Data Karyawan</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Nomor Induk:</label>
+                        <input type="text" name="nomor_induk" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nama Karyawan:</label>
+                        <input type="text" name="nama_karyawan" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Kelamin:</label>
+                        <select name="jenis_kelamin" class="form-select" required>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email:</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">No. Telepon:</label>
+                        <input type="number" name="no_telepon" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Jabatan:</label>
+                        <input type="text" name="jabatan" class="form-control" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">Tambah</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <a href="lihat.php" class="btn btn-secondary">Kembali ke Halaman Utama</a>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
