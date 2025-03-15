@@ -1,62 +1,48 @@
 <?php
 session_start();
+// Include file function.php
+require_once 'function.php';
 
 // Check if user is logged in
-if (!isset($_SESSION['nomor_induk'])) {
-    header("Location: index.php");
-    exit();
-}
+checkUserLogin();
 
 // Handle logout
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
-    session_unset();
-    session_destroy();
-    header("Location: index.php");
-    exit();
-}
-
-// Database connection
-$conn = mysqli_connect("localhost", "root", "", "crud_app");
-
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+    logout();
+    redirect('index.php');
 }
 
 // Get admin username info
 $nomor_induk = $_SESSION['nomor_induk'];
-$user_query = "SELECT username FROM users WHERE nomor_induk = '$nomor_induk'";
-$user_result = mysqli_query($conn, $user_query);
-$user_data = mysqli_fetch_assoc($user_result);
+$user_data = getUserData($nomor_induk);
 $username = $user_data['username'];
+
+$success_message = '';
+$error_message = '';
 
 // Delete functionality
 if (isset($_GET['delete'])) {
     $nomor_induk_karyawan = $_GET['delete'];
-    $delete_query = "DELETE FROM karyawan WHERE nomor_induk = '$nomor_induk_karyawan'";
+    $delete_result = deleteKaryawan($nomor_induk_karyawan);
     
-    if (mysqli_query($conn, $delete_query)) {
+    if ($delete_result === true) {
         $success_message = "Data berhasil dihapus!";
     } else {
-        $error_message = "Gagal menghapus data: " . mysqli_error($conn);
+        $error_message = "Gagal menghapus data: " . $delete_result;
     }
 }
 
-// **Pagination**
+// Pagination
 $per_page = 10; // Jumlah data per halaman
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Ambil nomor halaman dari URL
 $start = ($page - 1) * $per_page; // Tentukan titik awal data
 
 // Hitung total data
-$total_query = "SELECT COUNT(*) as total FROM karyawan";
-$total_result = mysqli_query($conn, $total_query);
-$total_row = mysqli_fetch_assoc($total_result);
-$total_data = $total_row['total'];
-
+$total_data = countKaryawan();
 $total_pages = ceil($total_data / $per_page); // Hitung total halaman
 
 // Ambil data sesuai halaman
-$query = "SELECT * FROM karyawan LIMIT $start, $per_page";
-$result = mysqli_query($conn, $query);
+$karyawan_data = getKaryawanWithPagination($start, $per_page);
 ?>
 
 <!DOCTYPE html>
@@ -75,6 +61,18 @@ $result = mysqli_query($conn, $query);
         </div>
         
         <div class="alert alert-info">Selamat datang, <strong><?php echo $username; ?></strong></div>
+        
+        <?php if (!empty($success_message)): ?>
+        <div class="alert alert-success" role="alert">
+            <?php echo $success_message; ?>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (!empty($error_message)): ?>
+        <div class="alert alert-danger" role="alert">
+            <?php echo $error_message; ?>
+        </div>
+        <?php endif; ?>
         
         <div class="d-flex justify-content-between mb-3">
             <a href="tambah.php" class="btn btn-success">Tambah Data</a>
@@ -99,35 +97,44 @@ $result = mysqli_query($conn, $query);
                     </tr>
                 </thead>
                 <tbody id="karyawan-body">
-                    <!-- Data dari AJAX akan masuk sini -->
+                    <?php
+                    $no = $start + 1;
+                    foreach ($karyawan_data as $row) {
+                    ?>
                     <tr>
-                        <td>1</td>
-                        <td>12345</td>
-                        <td>John Doe</td>
-                        <td>Laki-laki</td>
-                        <td>john.doe@example.com</td>
-                        <td>08123456789</td>
-                        <td>Manager</td>
+                        <td><?php echo $no++; ?></td>
+                        <td><?php echo $row['nomor_induk']; ?></td>
+                        <td><?php echo $row['nama_karyawan']; ?></td>
+                        <td><?php echo $row['jenis_kelamin']; ?></td>
+                        <td><?php echo $row['email']; ?></td>
+                        <td><?php echo $row['no_telepon']; ?></td>
+                        <td><?php echo $row['jabatan']; ?></td>
                         <td>
-                            <a href="detail.php?id=12345" class="btn btn-info btn-sm">Detail</a>
-                            <a href="edit.php?id=12345" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="hapus.php?id=12345" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');">Hapus</a>
+                            <a href="detail.php?id=<?php echo $row['nomor_induk']; ?>" class="btn btn-info btn-sm">Detail</a>
+                            <a href="ubah.php?id=<?php echo $row['nomor_induk']; ?>" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="?delete=<?php echo $row['nomor_induk']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');">Hapus</a>
                         </td>
                     </tr>
+                    <?php } ?>
+                    
+                    <?php if (empty($karyawan_data)): ?>
+                    <tr>
+                        <td colspan="8" class="text-center">Tidak ada data karyawan</td>
+                    </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
 
         <!-- Tombol Pagination -->
         <div class="d-flex justify-content-between align-items-center mt-3">
-            <button id="prev-btn" class="btn btn-secondary">Sebelumnya</button>
-            <span id="page-number" class="fw-bold">Halaman <?php echo $page; ?></span>
-            <button id="next-btn" class="btn btn-secondary">Selanjutnya</button>
+            <a href="?page=<?php echo max(1, $page - 1); ?>" class="btn btn-secondary <?php echo ($page == 1) ? 'disabled' : ''; ?>">Sebelumnya</a>
+            <span id="page-number" class="fw-bold">Halaman <?php echo $page; ?> dari <?php echo $total_pages; ?></span>
+            <a href="?page=<?php echo min($total_pages, $page + 1); ?>" class="btn btn-secondary <?php echo ($page == $total_pages) ? 'disabled' : ''; ?>">Selanjutnya</a>
         </div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./javascript/ajax.js"></script>
+    <!-- <script src="./javascript/ajax.js"></script> -->
 </body>
 </html>
-<?php mysqli_close($conn); ?>

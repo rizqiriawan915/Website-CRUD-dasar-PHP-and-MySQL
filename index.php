@@ -1,33 +1,29 @@
 <?php
 session_start();
+// Include file function.php
+require_once 'function.php';
 
-// Koneksi ke database
-$conn = mysqli_connect("localhost", "root", "", "crud_app");
-
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+// Cek jika user sudah login, redirect ke halaman utama
+if (isLoggedIn()) {
+    redirect('lihat.php');
 }
+
+$error_message = '';
 
 // Cek apakah form login telah dikirim
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nomor_induk = $_POST['nomorInduk'];
     $password = $_POST['password'];
 
-    // Cek apakah nomor induk ada di database
-    $query = "SELECT * FROM users WHERE nomor_induk = '$nomor_induk' AND password = '$password'";
-    $result = mysqli_query($conn, $query);
-
-    if (mysqli_num_rows($result) == 1) {
+    // Cek login
+    if (checkLogin($nomor_induk, $password)) {
         // Login berhasil
-        $_SESSION['nomor_induk'] = $nomor_induk;
-        header("Location: lihat.php"); // Redirect ke halaman utama
-        exit();
+        setLoginSession($nomor_induk);
+        redirect('lihat.php'); // Redirect ke halaman utama
     } else {
-        echo "Nomor Induk atau Password salah!";
+        $error_message = "Nomor Induk atau Password salah!";
     }
 }
-
-mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -45,6 +41,13 @@ mysqli_close($conn);
             <div class="col-md-4">
                 <div class="card shadow p-4">
                     <h2 class="text-center text-primary">Halaman Login</h2>
+                    
+                    <?php if (!empty($error_message)): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php echo $error_message; ?>
+                    </div>
+                    <?php endif; ?>
+                    
                     <form method="POST">
                         <div class="mb-3">
                             <label for="nomorInduk" class="form-label">Masukkan nomor induk anda:</label>

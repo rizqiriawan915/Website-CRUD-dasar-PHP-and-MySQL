@@ -1,10 +1,9 @@
 <?php
-// Koneksi ke database
-$conn = mysqli_connect("localhost", "root", "", "crud_app");
+// Include file function.php
+require_once 'function.php';
 
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
-}
+$message = '';
+$message_type = '';
 
 // Cek apakah tombol submit ditekan
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -14,25 +13,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone = $_POST['nomorTelepon'];
 
     // Cek apakah nomor induk sudah digunakan
-    $query_check = "SELECT * FROM users WHERE nomor_induk = '$nomor_induk'";
-    $result_check = mysqli_query($conn, $query_check);
-
-    if (mysqli_num_rows($result_check) > 0) {
-        echo "Nomor Induk sudah terdaftar. Silakan gunakan yang lain.";
+    if (checkNomorInduk($nomor_induk)) {
+        $message = "Nomor Induk sudah terdaftar. Silakan gunakan yang lain.";
+        $message_type = "danger";
     } else {
-        // Query untuk insert data
-        $query = "INSERT INTO users (nomor_induk, username, password, phone) 
-                  VALUES ('$nomor_induk', '$username', '$password', '$phone')";
-
-        if (mysqli_query($conn, $query)) {
-            echo "Registrasi berhasil! <a href='index.php'>Login sekarang</a>";
+        // Registrasi user baru
+        $result = registerUser($nomor_induk, $username, $password, $phone);
+        
+        if ($result === true) {
+            $message = "Registrasi berhasil! <a href='index.php'>Login sekarang</a>";
+            $message_type = "success";
         } else {
-            echo "Error: " . mysqli_error($conn);
+            $message = "Error: " . $result;
+            $message_type = "danger";
         }
     }
 }
-
-mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -50,6 +46,13 @@ mysqli_close($conn);
             <div class="col-md-5">
                 <div class="card shadow p-4">
                     <h2 class="text-center text-success">Halaman Registrasi</h2>
+                    
+                    <?php if (!empty($message)): ?>
+                    <div class="alert alert-<?php echo $message_type; ?>" role="alert">
+                        <?php echo $message; ?>
+                    </div>
+                    <?php endif; ?>
+                    
                     <form method="POST">
                         <div class="mb-3">
                             <label for="nomorInduk" class="form-label">Masukkan nomor induk anda:</label>
@@ -82,4 +85,3 @@ mysqli_close($conn);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
