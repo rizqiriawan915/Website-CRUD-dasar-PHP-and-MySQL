@@ -1,1 +1,1 @@
-Alhamdullilah projek nya sudah jadi semua guys. Besok saya akan melakukan penyempurnaan sebelum benar benar jadi secara sempuran
+Perubahan terakhir melakukan pemisahan antara kode php front end dengan back end. Dan file terakhir yang melakukan hal tersebut adalah file "lihat.php", dan masih terdapat kesalahan berupa live search yang tidak optimal, dan tampilan pemberitahuan berhasil menambahkan data yang masih kurang bagus dan maksimal
