@@ -1,1 +1,1 @@
-Memperbaiki sedikit permasalahn yang terdapat pada halaman "lihat.php". Setelah itu saya akan membuat sebuah fungsi untuk edit data karyawan nya. Stay tune guys!
+Alhamdullilah projek nya sudah jadi semua guys. Besok saya akan melakukan penyempurnaan sebelum benar benar jadi secara sempuran
